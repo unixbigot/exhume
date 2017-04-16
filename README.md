@@ -1,4 +1,6 @@
-# Exhume - Dig up your dead LiveJournal
+# Exhume - Dig up and export your dead LiveJournal
+
+## Importing your LiveJournal into the Hugo site generator
 
 If you're like me, you can no longer use LiveJournal given their
 latest terms of use.
