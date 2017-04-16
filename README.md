@@ -4,7 +4,8 @@ If you're like me, you can no longer use LiveJournal given their
 latest terms of use.
 
 I wrote this tool to import my LiveJournal into a new blog.  I chose
-the [Hugo](http://gohugo.io) blogging engine, as it 
+the [Hugo](http://gohugo.io) blogging engine, as it is super fast,
+runs on any PC, and you can host the output on AWS or a bunch of free hosting sites.
 
 You should dump your blog
 with [LJDump](http://hewgill.com/ljdump/)
