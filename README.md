@@ -56,3 +56,4 @@ Hugo, and upload your blog.
    aws s3 sync public/ s3://name.of.my.s3.bucket
 ```
    
+For an example, here is [My old Livejournal](http://rant.unixbigot.id.au.s3-website-ap-southeast-2.amazonaws.com) now preserved under my own control at Amazon.
