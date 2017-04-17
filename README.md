@@ -14,7 +14,9 @@ with [LJDump](http://hewgill.com/ljdump/)
 which will produce a file for each entry named (eg.) L-99 and a file
 for each Comment.
 
-TODO: This doesn't process comments yet, only entries.
+Comments (in files C-99 etc.) will be read and processed if present.
+Threading is not implemented.   Spam, Banned and deleted comments will
+be ignored by default (use `exhume post --help` to see how to change this).
 
 If you run this script on the entry files, it will output markdown
 files.
@@ -56,7 +58,7 @@ Hugo, and upload your blog.
    # Upload the files in public/
    rsync public/ my_hosting_server:/my/hosting/path
    # or
-   aws s3 sync public/ s3://name.of.my.s3.bucket
+   aws s3 sync --acl public-read public/ s3://name.of.my.s3.bucket
 ```
    
 For an example, here is [My old Livejournal](http://rant.unixbigot.id.au.s3-website-ap-southeast-2.amazonaws.com) now preserved under my own control at Amazon.

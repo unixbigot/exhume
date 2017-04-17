@@ -1,4 +1,4 @@
-// Copyright © 2017 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2017 Christopher Biggs <unixbigot@pobox.com>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+//
+// Known IDs for mood strings (not actually used at the moment)
+//
 var moods = map[int]string{
 	90:  "accomplished",
 	1:   "aggravated",
@@ -180,9 +183,34 @@ type LiveJournalPost struct {
 	Reply_count      int32    `xml:"reply_count"`
 	Picture_keyword  string   `xml:"picture_keyword"`
 	EventText        string   `xml:"event"`
+
+	Commentary LiveJournalComments `xml:"comments"`
+}
+
+type LiveJournalComments struct {
+	XMLName  xml.Name             `xml:"comments"`
+	Comments []LiveJournalComment `xml:"comment"`
+}
+
+//
+// This is a rough mapping from XML to Go of the useful fields in an LJ comment
+//
+type LiveJournalComment struct {
+	Subject  string `xml:"subject"`
+	User     string `xml:"user"`
+	Id       int32  `xml:"id"`
+	ParentID string `xml:"parentid"`
+	State    string `xml:"state"`
+	Date     string `xml:"date"`
+	Body     string `xml:"body"`
 }
 
 // Cobra command metadata for the post subcommand
+var ShowComments bool
+var ShowSpam bool
+var ShowBanned bool
+var ShowDeleted bool
+
 var postCmd = &cobra.Command{
 	Use:   "post",
 	Short: "Create a Hugo post from a LiveJournal Entry",
@@ -209,6 +237,13 @@ func processPost(path string) {
 	err = readJournalPost(path, &post)
 	if err != nil {
 		log.Fatalf("Error importing %s", path)
+	}
+
+	if ShowComments {
+		err = readJournalComments(path, &post)
+		if err != nil {
+			log.Fatalf("Error importing comments for %s", path)
+		}
 	}
 
 	err = writeHugoPost(path, &post)
@@ -241,6 +276,34 @@ func readJournalPost(path string, post *LiveJournalPost) error {
 	return nil
 }
 
+// Read the comment file (if any) associated with an LJ-post
+// Comments for L-99 are in C-99 (which may not exist)
+//
+func readJournalComments(path string, post *LiveJournalPost) error {
+	commentPath := strings.Replace(path, "L-", "C-", 1)
+	log.Printf("Importing LJ comments for %s from %v\n", path, commentPath)
+
+	rawComments, err := ioutil.ReadFile(commentPath)
+	if os.IsNotExist(err) {
+		return nil
+	} else if err != nil {
+		log.Printf("Unable to read comment %s: %v", path, err)
+		return err
+	}
+
+	//log.Printf("Raw comment: [%v]\n", string(rawComments))
+
+	//log.Printf("Parsing raw comments\n")
+	err = xml.Unmarshal(rawComments, &post.Commentary)
+	if err != nil {
+		log.Printf("Unable to parse XML from %v: %v", commentPath, err)
+		return err
+	}
+
+	//log.Printf("Comment Parse result: %+v", post.Commentary)
+	return nil
+}
+
 // Write a simple key value pair in TOML format
 func writeParam(f *os.File, param string, value interface{}) {
 	f.WriteString(fmt.Sprintf("%s = \"%v\"\n", param, value))
@@ -252,6 +315,39 @@ func writeListParam(f *os.File, param string, values []string) {
 		values[i] = "\"" + s + "\""
 	}
 	f.WriteString(fmt.Sprintf("%s = [%s]\n", param, strings.Join(values, ",")))
+}
+
+// Write a representation of a comment
+func writeComment(f *os.File, comment *LiveJournalComment) error {
+
+	if comment.State == "S" && !ShowSpam {
+		// Ignore spam
+		return nil
+	}
+	if comment.State == "B" && !ShowBanned {
+		// Banned users?
+		return nil
+	}
+	if comment.State == "D" && !ShowDeleted {
+		// Ignore deleted
+		return nil
+	}
+
+	// TODO: this program really ought to use GoLang templates for its html output
+
+	// TODO: it would be possible to
+	f.WriteString(fmt.Sprintf("<h4>Comment #%d from %s at %s:</h4>\n<p>",
+		comment.Id, comment.User, comment.Date))
+	if len(comment.Subject) > 0 {
+		f.WriteString(fmt.Sprintf("<b>Subject:</b> %s<br/>\n", comment.Subject))
+	}
+	if len(comment.ParentID) > 0 {
+		f.WriteString(fmt.Sprintf("<b>In-Reply-To:</b> %s<br/>\n", comment.ParentID))
+	}
+	f.WriteString(comment.Body)
+	f.WriteString("</p>\n\n")
+
+	return nil
 }
 
 // Write a Markdown file equivalent to a given LiveJournal post
@@ -303,11 +399,30 @@ func writeHugoPost(pathBase string, post *LiveJournalPost) error {
 		f.WriteString("</pre>\n")
 	}
 
+	if len(post.Commentary.Comments) == 0 {
+		return nil
+	}
+	f.WriteString("\n<p/>\n<p/>\n<hr/><h3>Comments:</h3>\n")
+
+	for _, comment := range post.Commentary.Comments {
+		err = writeComment(f, &comment)
+		if err != nil {
+			log.Printf("Unable to format comment for %s %#v %v", path, comment, err)
+			return err
+		}
+	}
+
 	return nil
 }
 
 func init() {
 	RootCmd.AddCommand(postCmd)
+
+	postCmd.Flags().BoolVarP(&ShowComments, "comments", "c", true, "Include comments in output")
+	postCmd.Flags().BoolVarP(&ShowSpam, "spam", "s", false, "Include spam comments in output")
+	postCmd.Flags().BoolVarP(&ShowBanned, "banned", "b", false, "Include banned-user comments in output")
+	postCmd.Flags().BoolVarP(&ShowDeleted, "deleted", "d", false, "Include deleted comments in output")
+
 	log.SetFlags(log.LstdFlags | log.Llongfile)
 
 	// Here you will define your flags and configuration settings.

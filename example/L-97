@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<event>
+<itemid>97</itemid>
+<eventtime>2016-08-23 09:06:00</eventtime>
+<url>http://unixbigot.livejournal.com/25032.html</url>
+<ditemid>25032</ditemid>
+<event_timestamp>1471943160</event_timestamp>
+<reply_count>1</reply_count>
+<logtime>2016-08-22 23:06:19</logtime>
+<props>
+<langs>{"languages":[["eng",0.459154197869507],["fra",0.118054297973735]],"detector":"Lingua-YALI:0.015","updated":1471907200}</langs>
+<commentalter>1482548051</commentalter>
+<personifi_tags>nterms:yes</personifi_tags>
+<crosspost_fb_log>[Mon Aug 22 23:06:20 2016]R [Mon Aug 22 23:06:24 2016]1 [Mon Aug 22 23:06:24 2016]http://www.facebook.com/598133780/posts/10154463996678781 </crosspost_fb_log>
+<spam_counter>1</spam_counter>
+<picture_keyword>mad scientist</picture_keyword>
+<crosspost_tw>https://twitter.com/unixbigot/status/767860494266806272</crosspost_tw>
+<interface>web</interface>
+<give_features>1</give_features>
+<taglist>five things</taglist>
+<crosspost_fb>http://www.facebook.com/598133780/posts/10154463996678781</crosspost_fb>
+<crosspost_tw_log>[Mon Aug 22 23:06:20 2016]R [Mon Aug 22 23:06:22 2016]https://twitter.com/unixbigot/status/767860494266806272 </crosspost_tw_log>
+</props>
+<can_comment>1</can_comment>
+<anum>200</anum>
+<event>&lt;p&gt;
+
+&lt;p&gt;Five things I wish my car&amp;rsquo;s nonexistent e-ink rear window could write:
+
+&lt;ul&gt;
+&lt;li&gt;I&amp;rsquo;m finished shopping, I just want to get out of this carpark&lt;/li&gt;
+&lt;li&gt;I live in this street, I am not taking a commuter shortcut&lt;/li&gt;
+&lt;li&gt;I stop at pedestrian crossings&lt;/li&gt;
+&lt;li&gt;I need to turn right, please let me merge&lt;/li&gt;
+&lt;li&gt;I&amp;rsquo;m looking for an address, just go around me&lt;/li&gt;
+&lt;/ul&gt;</event>
+<subject>Five things I wish my car’s nonexistent e-ink rear window could write</subject>
+</event>
